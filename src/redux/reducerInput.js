@@ -1,8 +1,3 @@
-export const actualInput = (newInput) => ({
-  type: "inputValue",
-  payload: newInput,
-});
-
 export const initialState = {
   input: "",
 };
