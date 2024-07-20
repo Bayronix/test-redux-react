@@ -1,25 +1,45 @@
-import { Formik, Form, Field } from "formik";
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { actionInput } from "../../redux/action";
+import { addTask, deleteTask } from "../../redux/tasksSlice";
 
 const InputForm = () => {
-  const input = useSelector((state) => state.input); // Assuming state has `input` key
   const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.tasks.tasks);
 
-  const handleSubmit = (values) => {
-    dispatch(actionInput(values.input)); // Dispatching the input value from the form
+  const handleAddTask = (values, { resetForm }) => {
+    if (values.input.trim()) {
+      dispatch(addTask(values.input));
+      resetForm();
+    }
+  };
+
+  const handleDeleteTask = (id) => {
+    dispatch(deleteTask(id));
   };
 
   return (
-    <Formik initialValues={{ input: "" }} onSubmit={handleSubmit}>
-      {() => (
-        <Form>
-          <Field type="text" name="input" />
-          <h3>Answer: {input}</h3>
-          <button type="submit">Submit</button>
-        </Form>
-      )}
-    </Formik>
+    <div>
+      <Formik initialValues={{ input: "" }} onSubmit={handleAddTask}>
+        {({ isSubmitting }) => (
+          <Form>
+            <Field type="text" name="input" placeholder="Enter task" />
+            <ErrorMessage name="input" component="div" className="error" />
+            <button type="submit" disabled={isSubmitting}>
+              Add
+            </button>
+          </Form>
+        )}
+      </Formik>
+      <ul>
+        {tasks.map((task) => (
+          <li key={task.id}>
+            {task.text}
+            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
